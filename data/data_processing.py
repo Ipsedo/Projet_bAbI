@@ -49,7 +49,6 @@ def make_vocab_and_transform_data(splitted_data):
 				vocab[w] = len(vocab)
 			new_quest.append(vocab[w])
 
-		new_ans = 0
 		if ans not in vocab:
 			vocab[ans] = len(vocab)
 		new_ans = vocab[ans]
