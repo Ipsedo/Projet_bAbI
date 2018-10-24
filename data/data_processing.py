@@ -54,7 +54,7 @@ def make_vocab_and_transform_data(splitted_data):
 			vocab[ans] = len(vocab)
 		new_ans = vocab[ans]
 
-		res.append((new_story, new_quest, ans))
+		res.append((new_story, new_quest, new_ans))
 	return vocab, res
 
 
