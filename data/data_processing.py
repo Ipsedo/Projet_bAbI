@@ -31,7 +31,7 @@ def process_data(data):
 					ans = line_of_q[1]
 			res.append((story, quest, ans))
 		i += 15
-		return res
+	return res
 
 def split(sent):
 	sent = sent.lower()
@@ -73,5 +73,12 @@ def make_vocab_and_transform_data(splitted_data):
 
 data_train = process_data(split_file(f))
 
-print(data_train[0])
+print(data_train[10])
+
+data=split_sentence(data_train)
+print(data[2])
+
+vocab, prepared_data = make_vocab_and_transform_data(data)
+
+print(prepared_data[10])
 
