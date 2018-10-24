@@ -49,6 +49,9 @@ class MyModel(nn.Module):
         # outStory.shape = (nb_mot, story_hidden_size)
         outQuest = outQuest.squeeze(1)
 
+        outStory = outStory[-1] # get last element
+        outQuest = outQuest[-1] # get last element
+
         out = th.cat((outQuest, outStory))
         out = self.lin(out)
         return self.act(out)
