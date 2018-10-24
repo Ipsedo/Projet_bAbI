@@ -1,8 +1,5 @@
-import numpy as np
+import torch as th
 import re
-
-f= open("../res/tasks_1-20_v1-2/en/qa1_single-supporting-fact_train.txt","r")
-
 
 def split_file(file):
 	res = []
@@ -68,17 +65,5 @@ def make_vocab_and_transform_data(splitted_data):
 			vocab[ans] = len(vocab)
 		new_ans = vocab[ans]
 
-		res.append((new_story, new_quest, new_ans))
+		res.append((th.LongTensor(new_story), th.LongTensor(new_quest), new_ans))
 	return vocab, res
-
-data_train = process_data(split_file(f))
-
-print(data_train[10])
-
-data=split_sentence(data_train)
-print(data[2])
-
-vocab, prepared_data = make_vocab_and_transform_data(data)
-
-print(prepared_data[10])
-
