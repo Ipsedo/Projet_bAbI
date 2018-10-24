@@ -3,7 +3,7 @@ import torch.nn as nn
 
 class MyModel(nn.Module):
     def __init__(self, vocab_size, embedding_size, story_hidden_size, quest_hidden_size):
-        super(MyModel).__init__()
+        super(MyModel, self).__init__()
 
         self.vocab_size = vocab_size
         self.embedding_size = embedding_size
@@ -17,10 +17,7 @@ class MyModel(nn.Module):
         self.rnn_quest = nn.RNN(self.embedding_size, self.quest_hidden_size)
 
         self.lin = nn.Linear(self.story_hidden_size + self.quest_hidden_size, self.vocab_size)
-        self.act = nn.SoftMax()
-
-    def init_hidden(self, hidden_dim):
-        return th.FloatTensor(1, 1, hidden_dim)
+        self.act = nn.Softmax(dim=0)
 
     def forward(self, input):
         """
