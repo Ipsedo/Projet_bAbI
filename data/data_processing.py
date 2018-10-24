@@ -21,6 +21,7 @@ print(data_train)
 
 def split(sent):
 	sent = sent.lower()
+	sent = re.sub(r'\d', '', sent)
 	return [w.strip(" ") for w in re.split('(\W+)', sent) if w.strip(" ")]
 
 
