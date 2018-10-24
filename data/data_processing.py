@@ -1,6 +1,8 @@
 import numpy as np
+import re
 
-f= open("./res/tasks_1-20_v1-2/en/qa1_single-supporting-fact_train.txt","r")
+f= open("../res/tasks_1-20_v1-2/en/qa1_single-supporting-fact_train.txt","r")
+
 
 def split_file(file):
 	res = []
@@ -30,6 +32,43 @@ def process_data(data):
 			res.append((story, quest, ans))
 		i += 15
 		return res
+
+def split(sent):
+	sent = sent.lower()
+	return [w.strip(" ") for w in re.split('(\W+)', sent) if w.strip(" ")]
+
+
+def split_sentence(data):
+	res = []
+	for story, quest, ans in data:
+		new_story = split(story)
+		new_quest = split(quest)
+		res.append((new_story, new_quest, ans))
+	return res
+
+
+def make_vocab_and_transform_data(splitted_data):
+	vocab = {}
+	res = []
+	for story, quest, ans in splitted_data:
+		new_story = []
+		for w in story:
+			if w not in vocab:
+				vocab[w] = len(vocab)
+			new_story.append(vocab[w])
+
+		new_quest = []
+		for w in quest:
+			if w not in vocab:
+				vocab[w] = len(vocab)
+			new_quest.append(vocab[w])
+
+		if ans not in vocab:
+			vocab[ans] = len(vocab)
+		new_ans = vocab[ans]
+
+		res.append((new_story, new_quest, new_ans))
+	return vocab, res
 
 data_train = process_data(split_file(f))
 
