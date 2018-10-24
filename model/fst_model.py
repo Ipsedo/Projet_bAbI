@@ -20,7 +20,7 @@ class MyModel(nn.Module):
 		self.lin = nn.Linear(self.story_hidden_size + self.quest_hidden_size, self.vocab_size)
 		self.act = nn.Softmax(dim=0)
 
-	def forward(self, input):
+	def forward(self, inp):
 		"""
 		input = tuple(story, quest, reponse)
 		story = sac d'indice de mot
@@ -28,10 +28,10 @@ class MyModel(nn.Module):
 			Pour la 2e : on prend les 4 1eres affirmation
 			etc.
 		quest = sac de mot
-		:param input:
+		:param inp:
 		:return:
 		"""
-		story, quest, _ = input
+		story, quest, _ = inp
 		# story.shape=(nb_mot_story)
 		# quest.shape=(nb_mot_quest)
 
