@@ -67,3 +67,19 @@ def make_vocab_and_transform_data(splitted_data):
 
 		res.append((th.LongTensor(new_story), th.LongTensor(new_quest), new_ans))
 	return vocab, res
+
+def make_data_with_vocab(splitted_data, vocab):
+	res = []
+	for story, quest, ans in splitted_data:
+		new_story = []
+		for w in story:
+			new_story.append(vocab[w])
+
+		new_quest = []
+		for w in quest:
+			new_quest.append(vocab[w])
+
+		new_ans = vocab[ans]
+
+		res.append((th.LongTensor(new_story), th.LongTensor(new_quest), new_ans))
+	return res
