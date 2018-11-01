@@ -13,11 +13,9 @@ class MyModel(nn.Module):
 
 		self.embedding_story = nn.Embedding(self.vocab_size, self.embedding_size)
 		self.rnn_story = nn.RNN(self.embedding_size, self.story_hidden_size)
-		self.act_rnn_story = nn.ReLU()
 
 		self.embedding_quest = nn.Embedding(self.vocab_size, self.embedding_size)
 		self.rnn_quest = nn.RNN(self.embedding_size, self.quest_hidden_size)
-		self.act_rnn_quest = nn.ReLU()
 
 		self.lin = nn.Linear(self.story_hidden_size + self.quest_hidden_size, self.vocab_size)
 		self.act = nn.Softmax(dim=0)
@@ -50,9 +48,6 @@ class MyModel(nn.Module):
 
 		outStory = outStory[-1]  # get last element
 		outQuest = outQuest[-1]  # get last element
-
-		outStory = self.act_rnn_story(outStory)
-		outQuest = self.act_rnn_quest(outQuest)
 
 		out = th.cat((outQuest, outStory))
 		out = self.lin(out)

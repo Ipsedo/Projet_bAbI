@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import model.fst_model as mod
 import torch as th
-
 import data.data_processing as data_process
 import data.data_processingqa20 as data_process20
 
@@ -22,15 +21,23 @@ data_test = data_process20.make_data_with_vocab(data_test, vocab_train)
 f.close()
 
 taille_vocab=len(vocab_train)
-taille_embedding = 10
-taille_hidden_story = 5
-taille_hidden_quest = 7
+taille_embedding = 50
+taille_hidden_story = 100
+taille_hidden_quest = 100
 
-model = mod.MyModel(taille_vocab, taille_embedding, taille_hidden_story, taille_hidden_quest)
-optimizer = th.optim.Adagrad(model.parameters(), lr=1e-2)
-loss_fn = th.nn.CrossEntropyLoss()
+story_max_len, quest_max_len = data_process.get_story_quest_max_len(data_train)
+
+model = mod.MyModel(taille_vocab, taille_embedding, taille_hidden_story, taille_hidden_quest, story_max_len, quest_max_len)
+loss_fn = th.nn.NLLLoss()
+
+if data_process.use_cuda():
+	model.cuda()
+	loss_fn.cuda()
+
+optimizer = th.optim.Adam(model.parameters(), lr=1e-3)
 
 nbEpoch = 20
+
 
 for e in range(nbEpoch):
 	model.train()
@@ -39,7 +46,10 @@ for e in range(nbEpoch):
 	for chall in data_train:
 		model.zero_grad()
 		out = model(chall)
-		loss = loss_fn(out.unsqueeze(0), th.LongTensor([chall[2]]))
+		target = th.LongTensor([chall[2]])
+		if data_process.use_cuda():
+			target = target.cuda()
+		loss = loss_fn(out.unsqueeze(0), target)
 		loss.backward()
 		optimizer.step()
 		nb_train += 1
@@ -54,17 +64,3 @@ for e in range(nbEpoch):
 		nb_test += 1
 
 	print("Epoch (%d) : err_rate = %f, loss = %f" % (e, nb_err / nb_test, epoch_loss / nb_train))
-
-
-model.train()
-out=model(data_train[0])
-print(out)
-print(len(vocab_train))
-
-s1=data_train[50][0].numpy()
-print(type(s1))
-str=""
-inv_map = {v: k for k, v in vocab_train.items()}
-for d in s1:
-	str += inv_map[d]
-print(str)

@@ -1,12 +1,18 @@
 import torch as th
 import re
 
+
+def use_cuda():
+	return th.cuda.is_available()
+
+
 def split_file(file):
 	res = []
 	out = file.readlines()
 	for s in out:
 		res.append(s.replace("\n", ''))
 	return res
+
 
 def process_data(data):
 	res = []
@@ -29,6 +35,7 @@ def process_data(data):
 			res.append((story, quest, ans))
 		i += 15
 	return res
+
 
 def split(sent):
 	sent = sent.lower()
@@ -65,8 +72,14 @@ def make_vocab_and_transform_data(splitted_data):
 			vocab[ans] = len(vocab)
 		new_ans = vocab[ans]
 
-		res.append((th.LongTensor(new_story), th.LongTensor(new_quest), new_ans))
+		t_story = th.LongTensor(new_story)
+		t_quest = th.LongTensor(new_quest)
+		if use_cuda():
+			t_story = t_story.cuda()
+			t_quest = t_quest.cuda()
+		res.append((t_story, t_quest, new_ans))
 	return vocab, res
+
 
 def make_data_with_vocab(splitted_data, vocab):
 	res = []
@@ -81,5 +94,19 @@ def make_data_with_vocab(splitted_data, vocab):
 
 		new_ans = vocab[ans]
 
-		res.append((th.LongTensor(new_story), th.LongTensor(new_quest), new_ans))
+		t_story = th.LongTensor(new_story)
+		t_quest = th.LongTensor(new_quest)
+		if use_cuda():
+			t_story = t_story.cuda()
+			t_quest = t_quest.cuda()
+		res.append((t_story, t_quest, new_ans))
 	return res
+
+
+def get_story_quest_max_len(prepared_data):
+	max_story = 0
+	max_quest = 0
+	for s, q, _ in prepared_data:
+		max_story = len(s) if len(s) > max_story else max_story
+		max_quest = len(q) if len(q) > max_quest else max_quest
+	return max_story, max_quest
