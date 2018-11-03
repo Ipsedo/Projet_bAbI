@@ -17,8 +17,9 @@ class MyModel(nn.Module):
 		self.embedding_quest = nn.Embedding(self.vocab_size, self.embedding_size)
 		self.rnn_quest = nn.RNN(self.embedding_size, self.quest_hidden_size)
 
+
 		self.lin = nn.Linear(self.story_hidden_size + self.quest_hidden_size, self.vocab_size)
-		self.act = nn.Softmax(dim=0)
+		self.act = nn.LogSoftmax(dim=0)
 
 	def forward(self, inp):
 		"""
@@ -37,11 +38,11 @@ class MyModel(nn.Module):
 
 		outStory = self.embedding_story(story)
 		# outStory.shape = (nb_mot_story, taille_embedding)
-		outStory, hidden = self.rnn_story(outStory.unsqueeze(1), th.FloatTensor(1, 1, self.story_hidden_size))
+		outStory, _ = self.rnn_story(outStory.unsqueeze(1), th.zeros(1, 1, self.story_hidden_size))
 		# outStory.shape = (nb_mot, 1, story_hidden_size)
 
 		outQuest = self.embedding_quest(quest)
-		outQuest, hidden = self.rnn_quest(outQuest.unsqueeze(1), th.FloatTensor(1, 1, self.quest_hidden_size))
+		outQuest, _ = self.rnn_quest(outQuest.unsqueeze(1), th.zeros(1, 1, self.quest_hidden_size))
 
 		outStory = outStory.squeeze(1) # outStory.shape = (nb_mot, story_hidden_size)
 		outQuest = outQuest.squeeze(1)
@@ -49,6 +50,6 @@ class MyModel(nn.Module):
 		outStory = outStory[-1]  # get last element
 		outQuest = outQuest[-1]  # get last element
 
-		out = th.cat((outQuest, outStory))
+		out = th.cat((outStory, outQuest))
 		out = self.lin(out)
 		return self.act(out)
