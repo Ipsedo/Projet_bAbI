@@ -3,7 +3,7 @@ import re
 
 
 def use_cuda():
-	return th.cuda.is_available()
+	return False#th.cuda.is_available()
 
 
 def split_file(file):
