@@ -34,7 +34,8 @@ taille_hidden_quest = 100
 
 story_max_len, quest_max_len = data_process.get_story_quest_max_len(data_train)
 
-model = mod.MyModel(taille_vocab, taille_embedding, 20, 20)
+model = mod.MyModel2(taille_vocab, taille_embedding, 20)
+)
 loss_fn = th.nn.NLLLoss()
 
 if data_process.use_cuda():
