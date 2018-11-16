@@ -3,10 +3,19 @@ import re
 
 
 def use_cuda():
+	"""
+
+	:return: True if we need to use CUDA
+	"""
 	return False#th.cuda.is_available()
 
 
 def split_file(file):
+	"""
+
+	:param file: A file object in reading mode
+	:return: All the sentences in the file with \n removed
+	"""
 	res = []
 	out = file.readlines()
 	for s in out:
@@ -15,6 +24,18 @@ def split_file(file):
 
 
 def process_data(data):
+	"""
+	Nous traitons les phrases de la manière suivante :
+	Une histoire de 15 phrases (10 affirmations et 5 questions)
+	sera divisé en 5 sous histoires : la première ne contenant
+	que deux affirmations et la question les suivante ainsi
+	que la réponse. La deuxième les quatre premières affirmations,
+	leur question et sa réponse etc. Jusqu'à la dernière sous histoire
+	contenant toute les affirmations et la dernière question-réponse
+	:param data: The list of sentence
+	:return: A list of tuple(story, question, answer)
+		where story and question are list of sentence
+	"""
 	res = []
 	total = len(data)
 	i = 0
@@ -38,12 +59,30 @@ def process_data(data):
 
 
 def split(sent):
+	"""
+	split and process the sentence :
+	- pass to lower all character
+	- remove the id
+	- split with non-word string
+	:param sent: the sentence to split
+	:return: list of word
+	"""
 	sent = sent.lower()
 	sent = re.sub(r'\d', '', sent)
 	return [w.strip(" ") for w in re.split('(\W+)', sent) if w.strip(" ")]
 
 
 def split_sentence(data):
+	"""
+	Split all the sentence to list of word
+
+	:param data: list of tuple(story, question, answer)
+		where story is list of sentence, idem for question and answer an word
+	:return: list of tuple(story, question, answer)
+		story : list of word (string)
+		question : list of word (string)
+		answer : word
+	"""
 	res = []
 	for story, quest, ans in data:
 		new_story = split(story)
@@ -53,6 +92,19 @@ def split_sentence(data):
 
 
 def make_vocab_and_transform_data(splitted_data):
+	"""
+	Pass the words to word-id and create at the same time the vocabulary
+
+	:param splitted_data: list of tuple(story, question, answer)
+		story : list of word (string)
+		question : list of word (string)
+		answer : word
+	:return: list of tuple(tuple(story, question, answer), vocab)
+		story : list of word-id (int)
+		question : list of word-id (int)
+		answer : word-id
+		vocab : dict string -> int
+	"""
 	vocab = {}
 	res = []
 	for story, quest, ans in splitted_data:
@@ -82,6 +134,20 @@ def make_vocab_and_transform_data(splitted_data):
 
 
 def make_data_with_vocab(splitted_data, vocab):
+	"""
+		Pass the words to word-id and create at the same time the vocabulary
+
+		:param splitted_data: list of tuple(story, question, answer)
+			story : list of word (string)
+			question : list of word (string)
+			answer : word
+		:param vocab: dict string -> int
+			give the word-id
+		:return: list of tuple(story, question, answer)
+			story : list of word-id (int)
+			question : list of word-id (int)
+			answer : word-id
+		"""
 	res = []
 	for story, quest, ans in splitted_data:
 		new_story = []
@@ -104,6 +170,11 @@ def make_data_with_vocab(splitted_data, vocab):
 
 
 def get_story_quest_max_len(prepared_data):
+	"""
+	Get story and question max len
+	:param prepared_data: Processed data
+	:return: max_story_len, max_question_len
+	"""
 	max_story = 0
 	max_quest = 0
 	for s, q, _ in prepared_data:
