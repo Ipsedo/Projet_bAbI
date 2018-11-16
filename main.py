@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import model.fst_model as mod
+import model.rnn_models as mod
 import torch as th
 import data.data_processing as data_process
 import data.data_processingqa20 as data_process20
@@ -26,16 +26,14 @@ data_test = data_process20.make_data_with_vocab(data_test, vocab_train)
 #data_test = data_process.split_sentence(data_test)
 #data_test = data_process.make_data_with_vocab(data_test, vocab_train)
 f.close()
-print(len(vocab_train))
+
 taille_vocab=len(vocab_train)
 taille_embedding = 10
 taille_hidden_story = 100
 taille_hidden_quest = 100
 
-story_max_len, quest_max_len = data_process.get_story_quest_max_len(data_train)
-
 model = mod.MyModel2(taille_vocab, taille_embedding, 20)
-)
+
 loss_fn = th.nn.NLLLoss()
 
 if data_process.use_cuda():
