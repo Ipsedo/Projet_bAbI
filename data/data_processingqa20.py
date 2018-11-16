@@ -1,19 +1,27 @@
 import torch as th
 import re
 
+"""
+Identique à la fonction "split_file" du fichier "data_processing.py"
+"""
 def split_file(file):
 	res = []
 	out = file.readlines()
 	for s in out:
 		res.append(s.replace("\n", ''))
 	return res
-
+"""
+Fonction permettant de split les données au niveau des espaces.
+"""
 def split_space(data):
 	res = []
 	for s in data:
 		res.append(s.split(" "))
 	return res
-
+"""
+Création de liste permettant le bon déroulement du split 
+(variable) pour chacunes des histoires du fichier.
+"""
 def mk_utils(data):
 	l1 = []
 	l2 = []
@@ -34,7 +42,16 @@ def mk_utils(data):
 	del resF[-1]
 	del res[0]
 	return resF, res
-
+"""
+Cette fonction est basée sur le même fonctionnement que 'process data' 
+dans 'data_processing'. Le but étant de constituer des triplet de type
+([1,2,3,4,5,6], [2,8,5,6,5], 15) où chaque numéro représente l'identifier du mot
+du vocabulaire. La première liste pour les phrases d'informations.
+La deuxième liste pour représenter la question.
+Le dernier id pour la réponse associée.
+La taille des histoires étant variable ici on traite des tailles de contexte qui varient
+entre 20 et 24 lignes.
+"""
 def process_data(data):
 	data_tier = split_space(data)
 	l_batch1, l_batch2 = mk_utils(data_tier)
@@ -59,12 +76,17 @@ def process_data(data):
 			res.append((story, quest, ans))
 	return res
 
+"""
+Identique à la fonction "split" du fichier "data_processing.py"
+"""
 def split(sent):
 	sent = sent.lower()
 	sent = re.sub(r'\d', '', sent)
 	return [w.strip(" ") for w in re.split('(\W+)', sent) if w.strip(" ")]
 
-
+"""
+Identique à la fonction "split_sentence" du fichier "data_processing.py"
+"""
 def split_sentence(data):
 	res = []
 	for story, quest, ans in data:
@@ -73,6 +95,9 @@ def split_sentence(data):
 		res.append((new_story, new_quest, ans))
 	return res
 
+"""
+Identique à la fonction "make_vocab_and_transform_data" du fichier "data_processing.py"
+"""
 def make_vocab_and_transform_data(splitted_data):
 	vocab = {}
 	res = []
@@ -96,6 +121,9 @@ def make_vocab_and_transform_data(splitted_data):
 		res.append((th.LongTensor(new_story), th.LongTensor(new_quest), new_ans))
 	return vocab, res
 
+"""
+Identique à la fonction "make_data_with_vocab" du fichier "data_processing.py"
+"""
 def make_data_with_vocab(splitted_data, vocab):
 	res = []
 	for story, quest, ans in splitted_data:
@@ -111,16 +139,3 @@ def make_data_with_vocab(splitted_data, vocab):
 
 		res.append((th.LongTensor(new_story), th.LongTensor(new_quest), new_ans))
 	return res
-
-# f = open("./res/tasks_1-20_v1-2/en/qa20_agents-motivations_train.txt","r")
-# f2 = open("./res/tasks_1-20_v1-2/en/qa20_agents-motivations_test.txt","r")
-
-# data_train = process_data(split_file(f))
-# data_train = split_sentence(data_train)
-# vocab_train, data_train = make_vocab_and_transform_data(data_train)
-# f.close()
-
-# data_test = process_data(split_file(f2))
-# data_test = split_sentence(data_test)
-# data_test = make_data_with_vocab(data_test, vocab_train)
-# f2.close()
